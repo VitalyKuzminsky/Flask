@@ -1,0 +1,38 @@
+<!-- Расширяем базовый шаблон для всех пользователей -->
+{% extends 'base.html' %}
+
+<!-- Передаём значение, которое будет в title -->
+{% block title %}
+    {{ super }}
+    Users list
+    <!--  Вызываем значение super, который дополняет блок title из базового шаблона. Без этого - полностью заменяем -->
+{% endblock %}
+
+<!-- В блок body будем передавать данные из Вьюхи -->
+{% block body %}
+    <div class="row">
+        <div class="col">
+          <h1>Users</h1>
+            <div>
+                <ul>
+                    <!-- Перебираем из словаря всех пользователей -->
+                    {% for user_id in users %}
+        <!--                <li>-->
+        <!--                    № {{ user_id }}: {{ users[user_id] }}-->
+        <!--                </li>-->
+        <!--            Переделаем отображение спискаюзеров на список ссылок на каждого -->
+                        <li class="list-group-item">
+                            {{ user_id }}:
+                            <a href="{{ url_for('user.get_user', pk=user_id) }}">
+                                 {{ users[user_id] }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
