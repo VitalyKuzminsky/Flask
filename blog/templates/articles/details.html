@@ -1,0 +1,25 @@
+<!-- Расширяем базовый шаблон для просмотра юзера-->
+{% extends 'base.html' %}
+
+{% block title %}
+    Article detail
+{% endblock %}
+
+{% block body %}
+    <h1>
+        Detail of article:
+    </h1>
+    <p>
+        № {{ article_pk }}:<br><br>
+        {{ article_body.get('title') }}<br><br>
+        {{ article_body.get('text') }}<br><br>
+        Имя автора: {{ article_body.get('author').get('name') }}<br>
+        ID автора: {{ article_body.get('author').get('id') }}<br>
+    </p>
+
+    <p>
+        <a href="{{ url_for('article.article_list') }}">
+            <button type="button" class="btn btn-primary">Go back</button>
+        </a>
+    </p>
+{% endblock %}

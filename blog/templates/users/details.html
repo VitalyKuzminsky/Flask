@@ -1,0 +1,22 @@
+<!-- Расширяем базовый шаблон для просмотра юзера-->
+{% extends 'base.html' %}
+
+{% block title %}
+    User detail
+    <!--    User #{{ user_id }}-->
+{% endblock %}
+
+{% block body %}
+    <h1>
+        Detail of user:
+    </h1>
+    <p>
+        № {{ user_pk }}: {{ user_name }}
+    </p>
+
+    <p>
+        <a href="{{ url_for('user.user_list') }}">
+            <button type="button" class="btn btn-primary">Go back</button>
+        </a>
+    </p>
+{% endblock %}

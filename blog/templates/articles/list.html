@@ -1,0 +1,31 @@
+<!-- Расширяем базовый шаблон для всех статей -->
+{% extends 'base.html' %}
+
+<!-- Передаём значение, которое будет в title -->
+{% block title %}
+    Articles list
+{% endblock %}
+
+<!-- В блок body будем передавать данные из Вьюхи -->
+{% block body %}
+    <div class="row">
+        <div class="col">
+          <h1>Articles</h1>
+            <div>
+                <ul>
+                    {% for article_id in articles %}
+                        <li class="list-group-item">
+                            {{ article_id }}:
+                            <a href="{{ url_for('article.get_article', pk=article_id) }}">
+                                 {{ articles[article_id].get('title') }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}

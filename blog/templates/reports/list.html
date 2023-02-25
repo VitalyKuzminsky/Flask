@@ -1,0 +1,29 @@
+<!-- Расширяем базовый шаблон для всех отчётов -->
+{% extends 'base.html' %}
+
+<!-- Передаём значение, которое будет в title -->
+{% block title %}
+    Reports list
+
+{% endblock %}
+
+<!-- В блок body будем передавать данные из Вьюхи -->
+{% block body %}
+    <div class="row">
+        <div class="col">
+          <h1>Reports</h1>
+            <div>
+                {% for report in reports %}
+                    <ul>
+                        <li class="list-group-item">
+                            {{ report }}
+                        </li>
+                    </ul>
+                    {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
