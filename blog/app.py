@@ -1,21 +1,53 @@
-from flask import Flask
+from flask import Flask, redirect, url_for
+from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
 
-from blog.article.views import article
-from blog.report.views import report
-from blog.user.views import user
+# from blog.article.views import article
+# from blog.auth.views import auth
+# from blog.report.views import report
+# from blog.user.views import user
+
+db = SQLAlchemy()
+login_manager = LoginManager()
 
 
 def create_app() -> Flask:  # Принимает ничего. Возвращает Flask-объект.
     """Создаёт экземпляр аппки и возвращает его - фабрика по созданию приложений"""
     app = Flask(__name__)  # Создаётся экземпляр приложения
+    # app.config.from_pyfile('config.cfg')
+    app.config['SECRET_KEY'] = '&5kkn1@hu(i_u!v=q!53_zpl7i+_+yo976py1r*@o&-@go_=*w'
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'  # Путь к БД
+
+    db.init_app(app)
+
+    login_manager.login_view = 'auth.login'  # Вьюха для авторизации
+    login_manager.init_app(app)  # Инициализируем приложение
+
+    from .models import User  # так сделал проподаватель, но не смог объяснить, почему без этого не работало
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
+    # @login_manager.unauthorized_handler
+    # def unauthorized():
+    #     return redirect(url_for('auth.login'))
+
     register_blueprints(app)  # экземпляр приложения передаётся в функцию регистрации blueprint
     return app
 
 
 def register_blueprints(app: Flask):  # Регистрация blueprint в приложении. Принимает в себя экземпляр приложения Flask
+    from blog.article.views import article
+    from blog.auth.views import auth
+    from blog.report.views import report
+    from blog.user.views import user
+
     app.register_blueprint(user)  # Принимает в себя blueprint с приложением user
     app.register_blueprint(report)  # Принимает в себя blueprint с приложением report
     app.register_blueprint(article)  # Принимает в себя blueprint с приложением report
+    app.register_blueprint(auth)  # Принимает в себя blueprint с приложением auth
 
 
 # Ниже код первого урока:

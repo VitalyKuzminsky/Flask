@@ -10,10 +10,16 @@
     <h1>
         Detail of user:
     </h1>
-    <p>
-        № {{ user_pk }}: {{ user_name }}
-    </p>
-
+    {% if user %}
+        <p>
+            № {{ user.id }}: {{ user.email }}<br>
+            Описание юзера
+        </p>
+    {% else %}
+        <p>
+            Пользователь не найден =(
+        </p>
+    {% endif %}
     <p>
         <a href="{{ url_for('user.user_list') }}">
             <button type="button" class="btn btn-primary">Go back</button>
