@@ -2,6 +2,8 @@ from flask import Flask, redirect, url_for
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
+from blog.extensions import migrate
+
 # from blog.article.views import article
 # from blog.auth.views import auth
 # from blog.report.views import report
@@ -20,6 +22,7 @@ def create_app() -> Flask:  # Принимает ничего. Возвраща�
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'  # Путь к БД
 
     db.init_app(app)
+    migrate.init_app(app, db, compare_type=True)
 
     login_manager.login_view = 'auth.login'  # Вьюха для авторизации
     login_manager.init_app(app)  # Инициализируем приложение
