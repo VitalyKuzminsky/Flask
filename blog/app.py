@@ -2,14 +2,14 @@ from flask import Flask, redirect, url_for
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
-from blog.extensions import migrate
+from blog.extensions import migrate, csrf, db
 
 # from blog.article.views import article
 # from blog.auth.views import auth
 # from blog.report.views import report
 # from blog.user.views import user
 
-db = SQLAlchemy()
+# db = SQLAlchemy()
 login_manager = LoginManager()
 
 
@@ -20,9 +20,11 @@ def create_app() -> Flask:  # Принимает ничего. Возвраща�
     app.config['SECRET_KEY'] = '&5kkn1@hu(i_u!v=q!53_zpl7i+_+yo976py1r*@o&-@go_=*w'
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'  # Путь к БД
+    app.config['WTF_CSRF_ENABLED'] = True
 
     db.init_app(app)
     migrate.init_app(app, db, compare_type=True)
+    csrf.init_app(app)
 
     login_manager.login_view = 'auth.login'  # Вьюха для авторизации
     login_manager.init_app(app)  # Инициализируем приложение

@@ -1,6 +1,8 @@
 from werkzeug.security import generate_password_hash  # Для хеширования пароля
 
-from blog.app import create_app, db
+# from blog.app import create_app, db
+from blog.app import create_app
+from blog.extensions import db
 
 app = create_app()
 
@@ -31,11 +33,12 @@ def create_users():
     # db.session.add(james)
     # db.session.commit()
     # print("done! created users:", admin, james)
-    # С урока:
-    db.session.add(
-        User(email='name@email.com', password=generate_password_hash('test123'))
-    )
-    db.session.commit()
+
+    # С урока:  --------- закоментил на 5 уроке
+    # db.session.add(
+    #     User(email='name@email.com', password=generate_password_hash('test123'))
+    # )
+    # db.session.commit()
 
 
 # wsgi для первого урока

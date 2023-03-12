@@ -1,9 +1,13 @@
 # Реализация blueprint - пользователи
-from flask import Blueprint, render_template, redirect
-from flask_login import login_required
+from flask import Blueprint, render_template, redirect, url_for, request
+from flask_login import login_required, current_user, login_user
 from werkzeug.exceptions import NotFound
+from werkzeug.security import generate_password_hash
 
 from blog.app import login_manager
+from blog.extensions import db
+from blog.forms.users import UserRegisterForm
+from blog.models import User
 
 user = Blueprint('user', __name__, url_prefix='/users', static_folder='../static')  # user - name,
 # __name__ - текущее название пакета, static_folder - где хранится статика
@@ -13,6 +17,37 @@ user = Blueprint('user', __name__, url_prefix='/users', static_folder='../static
 #     3: "Peter",
 # }
 # USERS = ['Alice', 'John', 'Mike']
+
+
+@user.route('register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('user.profile', pk=current_user.id))
+
+    form = UserRegisterForm(request.form)
+    errors = []
+    if request.method == 'POST' and form.validate_on_submit():
+        if User.query.filter_by(email=form.email.data).count():
+            form.email.errors.append('Email error')
+            return render_template('users/register.html', form=form)
+
+        _user = User(
+            email=form.email.data,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            password=generate_password_hash(form.password.data),
+        )
+
+        db.session.add(_user)
+        db.session.commit()
+
+        login_user(_user)  # Авторизация после регистрации
+
+    return render_template(
+        'users/register.html',
+        form=form,
+        errors=errors,
+    )
 
 
 @user.route('/')  # регистрируем в роуте блюпринт по адресу localhost/user/ с функцией ниже:
