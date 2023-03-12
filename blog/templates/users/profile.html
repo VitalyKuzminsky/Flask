@@ -12,8 +12,11 @@
     </h1>
     {% if user %}
         <p>
-            № {{ user.id }}: {{ user.email }}<br>
-            Описание юзера
+            Описание юзера:<br><br>
+            <b>№ id:</b> {{ user.id }}<br>
+            <b>Email:</b> {{ user.email }}<br>
+            <b>Имя:</b> {{ user.first_name }}<br>
+            <b>Фамилия:</b> {{ user.last_name }}
         </p>
     {% else %}
         <p>
