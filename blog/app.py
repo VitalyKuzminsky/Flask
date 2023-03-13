@@ -48,11 +48,13 @@ def register_blueprints(app: Flask):  # Регистрация blueprint в пр
     from blog.auth.views import auth
     from blog.report.views import report
     from blog.user.views import user
+    from blog.author.views import author
 
     app.register_blueprint(user)  # Принимает в себя blueprint с приложением user
     app.register_blueprint(report)  # Принимает в себя blueprint с приложением report
     app.register_blueprint(article)  # Принимает в себя blueprint с приложением report
     app.register_blueprint(auth)  # Принимает в себя blueprint с приложением auth
+    app.register_blueprint(author)  # Принимает в себя blueprint с приложением author
 
 
 # Ниже код первого урока:

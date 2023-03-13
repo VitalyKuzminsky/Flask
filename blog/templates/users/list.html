@@ -24,7 +24,7 @@
                         <li class="list-group-item">
                             {{ user.id }}:
                             <a href="{{ url_for('user.profile', pk=user.id) }}">
-                                 {{ user.email }}
+                                 {{ user.email }} ({{ user.first_name }} {{ user.last_name }})
                             </a>
                         </li>
                     </ul>
