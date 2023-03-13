@@ -1,58 +1,58 @@
-# Реализация blueprint - статьи
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, redirect, url_for
+from flask_login import login_required, current_user
 from werkzeug.exceptions import NotFound
 
-article = Blueprint('article', __name__, url_prefix='/articles', static_folder='../static')  # article - name,
-# __name__ - текущее название пакета, static_folder - где хранится статика
-ARTICLES = {
-    1: {
-        'title': 'Django',
-        'text': 'свободный фреймворк для веб-приложений на языке Python, использующий шаблон проектирования MVC. '
-                'Проект поддерживается организацией Django Software Foundation. Сайт на Django строится из одного '
-                'или нескольких приложений, которые рекомендуется делать отчуждаемыми и подключаемыми.',
-        'author': {
-            'name': 'Adrian Holovaty, Simon Willison',
-            'id': 1,
-        }
-    },
-    2: {
-        'title': 'Flask',
-        'text': 'фреймворк для создания веб-приложений на языке программирования Python, использующий набор '
-                'инструментов Werkzeug, а также шаблонизатор Jinja2. Относится к категории так называемых '
-                'микрофреймворков — минималистичных каркасов веб-приложений, сознательно предоставляющих лишь '
-                'самые базовые возможности.',
-        'author': {
-            'name': 'Армин Ронахер',
-            'id': 2,
-        }
-    },
-}
-# ARTICLES = {
-#     1: "Flask",
-#     2: "Django",
-#     3: "JSON:API",
-# }
+from blog.extensions import db
+from blog.forms.article import CreateArticleForm
+from blog.models import Article, Author
+
+article = Blueprint('article', __name__, url_prefix='/articles', static_folder='../static')
 
 
-@article.route('/')  # регистрируем в роуте блюпринт по адресу localhost/article/ с функцией ниже:
-def article_list():  # ф-ия, которая не принимает ничего
-    return render_template(  # Ф-ия render_template принимает в себя template name или list
-        # (название нашего шаблона, который должен быть отрисован)
+@article.route('/', methods=['GET'])
+def article_list():
+    articles: Article = Article.query.all()
+    return render_template(
         'articles/list.html',
-        articles=ARTICLES,
+        articles=articles,
     )
 
 
-@article.route('/<int:pk>')  # pk - primary key
-def get_article(pk: int):  # Принимает id статьи
-    """Получение конкретной статьи"""
-    try:  # обрабатываем исключение, если статьи с таким id не будет
-        article_body = ARTICLES[pk]
-    except KeyError:
-        raise NotFound(f'Article id {pk} not found')  # Выдаём текст с отработанной ошибкой
-    article_pk = pk
+@article.route('/<int:article_id>/', methods=['GET'])
+def article_detail(article_id):
+    _article: Article = Article.query.filter_by(id=article_id).one_or_none()
+    if _article is None:
+        raise NotFound
     return render_template(
         'articles/details.html',
-        article_body=article_body,
-        article_pk=article_pk,
+        article=_article,
     )
+
+
+@article.route('/create/', methods=['GET'])
+@login_required
+def create_article_form():
+    form = CreateArticleForm(request.form)
+    return render_template('articles/create.html', form=form)
+
+
+@article.route('/', methods=['POST'])
+@login_required
+def create_article():
+    form = CreateArticleForm(request.form)
+    if form.validate_on_submit():
+        _article = Article(title=form.title.data.strip(), text=form.text.data)
+        if current_user.author:
+            _article.author_id = current_user.author.id
+        else:
+            author = Author(user_id=current_user.id)
+            db.session.add(author)
+            db.session.flush()
+            _article.author_id = author.id
+
+        db.session.add(_article)
+        db.session.commit()
+
+        return redirect(url_for('article.article_detail', article_id=_article.id))
+
+    return render_template('articles/create.html', form=form)

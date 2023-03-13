@@ -1,25 +1,36 @@
-<!-- Расширяем базовый шаблон для просмотра юзера-->
+<!-- Расширяем базовый шаблон для просмотра статей-->
 {% extends 'base.html' %}
 
 {% block title %}
-    Article detail
+    {{ article.title }}
 {% endblock %}
 
 {% block body %}
-    <h1>
-        Detail of article:
-    </h1>
-    <p>
-        № {{ article_pk }}:<br><br>
-        {{ article_body.get('title') }}<br><br>
-        {{ article_body.get('text') }}<br><br>
-        Имя автора: {{ article_body.get('author').get('name') }}<br>
-        ID автора: {{ article_body.get('author').get('id') }}<br>
-    </p>
-
-    <p>
+    <div class="row">
+        <h1>{{ article.title }}</h1>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-12">{{ article.text }}</div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-6">
+            <div>
+                <small class="text-muted">Author: {{ article.author.user.first_name }} {{ article.author.user.last_name }}</small>
+            </div>
+            <div>
+                <small class="text-muted">Created at: {{ article.created_at.strftime('%d-%m-%Y %H:%M:%S') }}</small>
+            </div>
+            <div>
+                <small class="text-muted">Updated at: {{ article.updated_at.strftime('%d-%m-%Y %H:%M:%S') }}</small>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div>
         <a href="{{ url_for('article.article_list') }}">
             <button type="button" class="btn btn-primary">Go back</button>
         </a>
-    </p>
+    </div>
 {% endblock %}
