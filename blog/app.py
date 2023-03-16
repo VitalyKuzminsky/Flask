@@ -1,6 +1,7 @@
 from flask import Flask, redirect, url_for
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from blog import commands
 
 from blog.extensions import migrate, csrf, db
 
@@ -55,6 +56,11 @@ def register_blueprints(app: Flask):  # Регистрация blueprint в пр
     app.register_blueprint(article)  # Принимает в себя blueprint с приложением report
     app.register_blueprint(auth)  # Принимает в себя blueprint с приложением auth
     app.register_blueprint(author)  # Принимает в себя blueprint с приложением author
+
+
+# def register_commands(app: Flask):
+#     app.cli.add_command(commands.create_init_user)
+#     app.cli.add_command(commands.create_init_tags)
 
 
 # Ниже код первого урока:

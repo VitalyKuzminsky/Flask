@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash  # Для хеширова�
 # from blog.app import create_app, db
 from blog.app import create_app
 from blog.extensions import db
+import click
 
 app = create_app()
 
@@ -39,6 +40,23 @@ def create_users():
     #     User(email='name@email.com', password=generate_password_hash('test123'))
     # )
     # db.session.commit()
+
+
+# 7 урок - так сделал я
+@app.cli.command('create-init-tags')
+def create_init_tags():
+    """
+    Created tags
+    """
+    from blog.models import Tag
+    from wsgi import app
+
+    with app.app_context():
+        tags = ('flask', 'django', 'python', 'gb', 'sqlite')
+        for item in tags:
+            db.session.add(Tag(name=item))
+        db.session.commit()
+    click.echo(f'Created tags: {", ".join(tags)}')
 
 
 # wsgi для первого урока
