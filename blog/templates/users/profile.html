@@ -2,13 +2,13 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    User detail
+    User profile
     <!--    User #{{ user_id }}-->
 {% endblock %}
 
 {% block body %}
     <h1>
-        Detail of user:
+        Ave, {{ user.first_name }}!
     </h1>
     {% if user %}
         <p>
@@ -21,6 +21,23 @@
     {% else %}
         <p>
             Пользователь не найден =(
+        </p>
+    {% endif %}
+
+    <h3>Написанные статьи</h3>
+    {% if user.author.articles %}
+        {% for article in user.author.articles %}
+            <ul>
+                <li>
+                    <a href="{{ url_for('article.article_detail', article_id=article.id) }}">
+                        {{ article.title }}
+                    </a>
+                </li>
+            </ul>
+        {% endfor %}
+    {% else %}
+        <p>
+            Пока нет статей =(
         </p>
     {% endif %}
     <p>
