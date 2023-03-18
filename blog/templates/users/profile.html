@@ -10,6 +10,11 @@
     <h1>
         Ave, {{ user.first_name }}!
     </h1>
+    {% if current_user.is_staff %}
+        <h2>
+            Congratulations! You have GOD MODE enabled.
+        </h2>
+    {% endif %}
     {% if user %}
         <p>
             Описание юзера:<br><br>

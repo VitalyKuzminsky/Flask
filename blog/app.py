@@ -3,7 +3,7 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from blog import commands
 
-from blog.extensions import migrate, csrf, db
+from blog.extensions import migrate, csrf, db, admin
 
 # from blog.article.views import article
 # from blog.auth.views import auth
@@ -22,10 +22,12 @@ def create_app() -> Flask:  # Принимает ничего. Возвраща�
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'  # Путь к БД
     app.config['WTF_CSRF_ENABLED'] = True
+    app.config['FLASK_ADMIN_SWATCH'] = 'cosmo'
 
     db.init_app(app)
     migrate.init_app(app, db, compare_type=True)
     csrf.init_app(app)
+    admin.init_app(app)
 
     login_manager.login_view = 'auth.login'  # Вьюха для авторизации
     login_manager.init_app(app)  # Инициализируем приложение
@@ -50,12 +52,15 @@ def register_blueprints(app: Flask):  # Регистрация blueprint в пр
     from blog.report.views import report
     from blog.user.views import user
     from blog.author.views import author
+    from blog import admin
 
     app.register_blueprint(user)  # Принимает в себя blueprint с приложением user
     app.register_blueprint(report)  # Принимает в себя blueprint с приложением report
     app.register_blueprint(article)  # Принимает в себя blueprint с приложением report
     app.register_blueprint(auth)  # Принимает в себя blueprint с приложением auth
     app.register_blueprint(author)  # Принимает в себя blueprint с приложением author
+
+    admin.register_views()
 
 
 # def register_commands(app: Flask):
