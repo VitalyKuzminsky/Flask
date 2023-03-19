@@ -1,9 +1,10 @@
+from combojsonapi.spec import ApiSpecPlugin
 from flask import Flask, redirect, url_for
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from blog import commands
 
-from blog.extensions import migrate, csrf, db, admin
+from blog.extensions import migrate, csrf, db, admin, api
 
 # from blog.article.views import article
 # from blog.auth.views import auth
@@ -23,11 +24,27 @@ def create_app() -> Flask:  # Принимает ничего. Возвраща�
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'  # Путь к БД
     app.config['WTF_CSRF_ENABLED'] = True
     app.config['FLASK_ADMIN_SWATCH'] = 'cosmo'
+    app.config['OPENAPI_URL_PREFIX'] = '/api/docs'
+    app.config['OPENAPI_VERSION'] = '3.0.0'
+    app.config['OPENAPI_SWAGGER_UI_PATH'] = '/'
+    app.config['OPENAPI_SWAGGER_UI_VERSION'] = '3.51.1'
 
     db.init_app(app)
     migrate.init_app(app, db, compare_type=True)
     csrf.init_app(app)
     admin.init_app(app)
+    api.plugins = [
+        ApiSpecPlugin(
+            app=app,
+            tags={
+                'Tag': 'Tag API',
+                'User': 'User API',
+                'Author': 'Author API',
+                'Article': 'Article API',
+            }
+        ),
+    ]
+    api.init_app(app)
 
     login_manager.login_view = 'auth.login'  # Вьюха для авторизации
     login_manager.init_app(app)  # Инициализируем приложение
@@ -43,7 +60,31 @@ def create_app() -> Flask:  # Принимает ничего. Возвраща�
     #     return redirect(url_for('auth.login'))
 
     register_blueprints(app)  # экземпляр приложения передаётся в функцию регистрации blueprint
+    register_api_routes(app)
     return app
+
+
+def register_api_routes(app: Flask):
+    from blog.api.tag import TagList
+    from blog.api.tag import TagDetail
+    from blog.api.user import UserList
+    from blog.api.user import UserDetail
+    from blog.api.author import AuthorList
+    from blog.api.author import AuthorDetail
+    from blog.api.article import ArticleList
+    from blog.api.article import ArticleDetail
+
+    api.route(TagList, 'tag_list', '/api/tags/', tag='Tag')
+    api.route(TagDetail, 'tag_detail', '/api/tags/<int:id>', tag='Tag')
+
+    api.route(UserList, 'user_list', '/api/users/', tag='User')
+    api.route(UserDetail, 'user_detail', '/api/users/<int:id>', tag='User')
+
+    api.route(AuthorList, 'author_list', '/api/authors/', tag='Author')
+    api.route(AuthorDetail, 'author_detail', '/api/authors/<int:id>', tag='Author')
+
+    api.route(ArticleList, 'article_list', '/api/articles/', tag='Article')
+    api.route(ArticleDetail, 'article_detail', '/api/articles/<int:id>', tag='Article')
 
 
 def register_blueprints(app: Flask):  # Регистрация blueprint в приложении. Принимает в себя экземпляр приложения Flask
