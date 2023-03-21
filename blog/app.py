@@ -1,3 +1,5 @@
+from combojsonapi.event import EventPlugin
+from combojsonapi.permission import PermissionPlugin
 from combojsonapi.spec import ApiSpecPlugin
 from flask import Flask, redirect, url_for
 from flask_login import LoginManager
@@ -34,6 +36,8 @@ def create_app() -> Flask:  # Принимает ничего. Возвраща�
     csrf.init_app(app)
     admin.init_app(app)
     api.plugins = [
+        EventPlugin(),
+        PermissionPlugin(),
         ApiSpecPlugin(
             app=app,
             tags={
