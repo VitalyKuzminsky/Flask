@@ -65,8 +65,11 @@ def create_init_tags():
 # from blog.app import app
 
 
-if __name__ == "__main__":  # изолирует повторое использование кода при импорте
-    app.run(
-        host="0.0.0.0",  # Адрес обращения к хосту
-        debug=True,  # Режим дебага.
-    )
+# if __name__ == "__main__":  # изолирует повторое использование кода при импорте
+#     app.run(
+#         host="0.0.0.0",  # Адрес обращения к хосту
+#         debug=True,  # Режим дебага.
+#     )
+
+if __name__ == "__main__":
+    app.run(debug=True)
